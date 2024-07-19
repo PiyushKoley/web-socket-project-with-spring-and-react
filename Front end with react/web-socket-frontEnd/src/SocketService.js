@@ -12,23 +12,29 @@ class WebSocketService {
         this.client = new Client({
             webSocketFactory: () => socket,
             reconnectDelay: 5000,
+            onStompError: (error) => {
+                console.log("error in stomp ",error);
+            } ,
             onConnect: () => {
                 console.log('Connected');
-                this.client.subscribe('/topic/first', (message) => {
+                this.client.subscribe('/topic/first',(message) => {
                     console.log("***** socket message ******", message.body);
                 });
+                
             },
+            
             onDisconnect: () => {
                 alert("socket disconnected");
                 console.log('Disconnected');
             },
         });
-
+        
         this.client.activate();
     }
 
     sendMessage(message) {
-        if (this.client && this.client.connected) {
+        
+        if (this.client && this.client.connected()) {
             this.client.publish({
                 destination: '/app/hello',
                 body: message,
